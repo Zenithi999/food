@@ -61,11 +61,20 @@ export async function clearSessionCookie() {
   store.delete(SESSION_COOKIE);
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function getSession(): Promise<SessionPayload | null> {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
   if (!token) return null;
-  return verifySessionToken(token);
+  const session = await verifySessionToken(token);
+  // Хуучин (uuid биш) session cookie үлдсэн бол хүчингүйд тооцож дахин нэвтрэхийг шаардана.
+  // (cookies() нь Server Component-оос зөвхөн унших боломжтой тул энд устгахгүй,
+  // харин null буцаан нэвтрэх шаардлагатай болгоно.)
+  if (session && !UUID_REGEX.test(session.userId)) {
+    return null;
+  }
+  return session;
 }
 
 export async function requireAdminSession(): Promise<SessionPayload | null> {

@@ -24,7 +24,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: "Төлбөрийн бичлэг олдсонгүй." }, { status: 404 });
   }
 
-  if (payment.status !== "PENDING" || payment.type !== "QPAY" || !payment.qpayInvoiceId) {
+  if (payment.status !== "PENDING" || !payment.qpayInvoiceId) {
     return NextResponse.json({ status: payment.status });
   }
 

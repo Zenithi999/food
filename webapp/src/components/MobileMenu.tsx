@@ -48,11 +48,11 @@ export function MobileMenu({
         role="dialog"
         aria-modal="true"
         aria-label="Цэс"
-        className={`md:hidden fixed top-0 left-0 z-[70] h-full w-full max-w-xs bg-background shadow-2xl flex flex-col will-change-transform transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-          open ? "translate-x-0" : "-translate-x-full"
+        className={`md:hidden fixed top-0 left-0 z-[70] h-dvh w-[85vw] max-w-xs bg-background shadow-2xl flex flex-col transition-[transform,visibility] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          open ? "translate-x-0 visible" : "-translate-x-full invisible"
         }`}
       >
-        <div className="flex items-center justify-between px-margin-mobile h-20 border-b border-outline-variant">
+        <div className="flex items-center justify-between px-margin-mobile h-16 border-b border-outline-variant">
           <span className="font-headline-md text-headline-md font-medium text-primary">Цэс</span>
           <button
             onClick={onClose}

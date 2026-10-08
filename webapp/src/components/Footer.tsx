@@ -5,12 +5,11 @@ export function Footer() {
         <div className="max-w-xs">
           <h2 className="font-headline-md text-headline-md text-primary mb-u-sm">ХүнсМаркет</h2>
           <p className="text-on-secondary-container mb-u-md">
-            Монголын хэрэглэгчдэд зориулсан онлайн хүнсний дэлгүүр. Шинэ, чанартай бүтээгдэхүүнийг
-            танай гэрт хүргэнэ.
+            Монголын хэрэглэгчдэд зориулсан онлайн хүнсний дэлгүүр. Шинэ, чанартай бүтээгдэхүүн.
           </p>
           <p className="font-body-md text-body-md text-on-secondary-container">© 2026 ХүнсМаркет. Бүх эрх хуулиар хамгаалагдсан.</p>
         </div>
-        <div className="grid grid-cols-2 gap-u-xl">
+        <div className="grid grid-cols-2 gap-6 md:gap-u-xl w-full md:w-auto">
           <div className="flex flex-col gap-u-sm">
             <h4 className="font-label-md text-label-md text-primary uppercase tracking-widest">Холбоо барих</h4>
             <a className="text-secondary hover:text-primary hover:underline decoration-primary transition-colors" href="tel:+97677778888">
@@ -29,7 +28,7 @@ export function Footer() {
               Нууцлалын бодлого
             </a>
             <a className="text-secondary hover:text-primary hover:underline decoration-primary transition-colors" href="#">
-              Хүргэлтийн мэдээлэл
+              Түгээмэл асуулт
             </a>
             <a className="text-secondary hover:text-primary hover:underline decoration-primary transition-colors" href="#">
               Буцаалт

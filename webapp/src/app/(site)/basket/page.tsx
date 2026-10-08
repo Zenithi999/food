@@ -11,8 +11,6 @@ import { formatMNT } from "@/lib/format";
 import type { PaymentType } from "@/types";
 
 const VAT_RATE = 0.1;
-const FREE_SHIPPING_THRESHOLD = 50000;
-const SHIPPING_FEE = 5000;
 
 const PAYMENT_OPTIONS: { value: PaymentType; label: string }[] = [
   { value: "CASH", label: "Бэлнээр" },
@@ -36,14 +34,13 @@ export default function BasketPage() {
   useEffect(() => setHydrated(true), []);
 
   const subtotal = hydrated ? cartSubtotal(items) : 0;
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_FEE;
   const vat = subtotal * VAT_RATE;
-  const total = subtotal + shipping + vat;
+  const total = subtotal + vat;
 
   async function handleCheckout() {
     setError(null);
     if (!address.trim()) {
-      setError("Хүргэлтийн хаягаа оруулна уу.");
+      setError("Хаягаа оруулна уу.");
       return;
     }
     if (!phone.trim()) {
@@ -121,25 +118,25 @@ export default function BasketPage() {
   return (
     <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-u-xl w-full">
       <h1 className="font-display-lg text-display-lg text-primary mb-u-lg">Таны сагс</h1>
-      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-u-xl">
-        <div className="lg:col-span-8 space-y-u-md">
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-u-xl">
+        <div className="lg:col-span-8 space-y-3 md:space-y-u-md">
           {items.map((item) => (
             <div
               key={item.productId}
-              className="item-card-shadow bg-surface-container-lowest p-u-md rounded-lg flex items-center gap-u-md"
+              className="bg-surface-container-lowest border border-outline-variant/50 p-3 md:p-u-md rounded-2xl flex items-center gap-3 md:gap-u-md"
             >
-              <div className="w-24 h-24 md:w-32 md:h-32 rounded overflow-hidden flex-shrink-0 relative">
-                <Image src={item.imageUrl} alt={item.name} fill sizes="128px" className="object-cover" />
+              <div className="w-20 h-20 md:w-28 md:h-28 rounded-xl overflow-hidden flex-shrink-0 relative bg-white">
+                <Image src={item.imageUrl} alt={item.name} fill sizes="112px" className="object-contain p-1" />
               </div>
-              <div className="flex-grow">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-headline-md text-headline-md text-primary">{item.name}</h3>
-                    <p className="text-on-surface-variant font-label-sm uppercase tracking-wider">{item.unit}</p>
+              <div className="flex-grow min-w-0">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0">
+                    <h3 className="text-sm md:text-base font-medium text-on-surface leading-snug line-clamp-2">{item.name}</h3>
+                    <p className="text-on-surface-variant text-[12px] mt-0.5">{item.unit}</p>
                   </div>
-                  <p className="font-label-md text-label-md text-primary">{formatMNT(item.price)}</p>
+                  <p className="shrink-0 text-sm md:text-base font-bold text-on-surface">{formatMNT(item.price)}</p>
                 </div>
-                <div className="mt-u-md flex justify-between items-center">
+                <div className="mt-2 md:mt-u-md flex justify-between items-center">
                   <div className="flex items-center border border-tertiary-fixed rounded-full px-2 py-1 bg-surface-container-low">
                     <button
                       className="p-1 hover:text-primary transition-colors active:scale-90"
@@ -156,19 +153,20 @@ export default function BasketPage() {
                     </button>
                   </div>
                   <button
-                    className="text-secondary hover:text-error transition-colors flex items-center gap-1 font-label-sm"
+                    className="text-secondary hover:text-error transition-colors flex items-center gap-1 font-label-sm p-1"
                     onClick={() => removeItem(item.productId)}
+                    aria-label="Устгах"
                   >
-                    <MaterialIcon name="delete" className="text-base" />
-                    УСТГАХ
+                    <MaterialIcon name="delete" className="text-lg" />
+                    <span className="hidden sm:inline">УСТГАХ</span>
                   </button>
                 </div>
               </div>
             </div>
           ))}
 
-          <div className="item-card-shadow bg-surface-container-lowest p-u-md rounded-lg space-y-u-sm">
-            <h2 className="font-headline-md text-headline-md text-primary mb-1">Хүргэлтийн мэдээлэл</h2>
+          <div className="bg-surface-container-lowest border border-outline-variant/50 p-4 md:p-u-md rounded-2xl space-y-u-sm">
+            <h2 className="font-headline-md text-headline-md text-primary mb-1">Захиалгын мэдээлэл</h2>
             <div>
               <label className="block font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">
                 Хаяг
@@ -198,7 +196,7 @@ export default function BasketPage() {
               <input
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="Жишээ нь: орой 18 цагийн дараа хүргэнэ үү"
+                placeholder="Жишээ нь: тодорхой цагт бэлэн байлгах хүсэлт"
                 className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-colors"
               />
             </div>
@@ -206,16 +204,12 @@ export default function BasketPage() {
         </div>
 
         <div className="lg:col-span-4">
-          <div className="bg-secondary-container rounded-lg p-u-lg lg:sticky lg:top-28">
+          <div className="bg-secondary-container rounded-2xl p-5 md:p-u-lg lg:sticky lg:top-28">
             <h2 className="font-headline-md text-headline-md text-primary mb-u-md">Захиалгын дүн</h2>
             <div className="space-y-u-sm mb-u-lg">
               <div className="flex justify-between items-center">
                 <span className="text-secondary">Дэд дүн</span>
                 <span className="font-label-md">{formatMNT(subtotal)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-secondary">Хүргэлт</span>
-                <span className="font-label-md text-primary">{shipping === 0 ? "Үнэгүй" : formatMNT(shipping)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-secondary">НӨАТ (10%)</span>
@@ -226,12 +220,6 @@ export default function BasketPage() {
                 <span className="font-headline-md text-headline-md text-primary">{formatMNT(total)}</span>
               </div>
             </div>
-
-            {subtotal > 0 && subtotal < FREE_SHIPPING_THRESHOLD && (
-              <p className="text-label-sm text-secondary mb-u-md">
-                {formatMNT(FREE_SHIPPING_THRESHOLD - subtotal)}-ны худалдан авалт хийвэл хүргэлт үнэгүй.
-              </p>
-            )}
 
             <div className="mb-u-md">
               <p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">
@@ -267,7 +255,7 @@ export default function BasketPage() {
             </button>
 
             <div className="mt-u-md text-center">
-              <p className="text-label-sm text-on-surface-variant italic">Захиалгын дараа хүргэлтийн хугацааг тантай холбогдож баталгаажуулна.</p>
+              <p className="text-label-sm text-on-surface-variant italic">Захиалгын дараа тантай холбогдож баталгаажуулна.</p>
             </div>
           </div>
         </div>

@@ -27,6 +27,7 @@ const emptyForm = {
   subcategoryId: "",
   imageUrl: "",
   stock: "",
+  stockWarehouse: "",
   featured: false,
 };
 
@@ -73,6 +74,7 @@ export function ProductsTable({
       subcategoryId: product.subcategoryId ?? "",
       imageUrl: product.imageUrl,
       stock: String(product.stock),
+      stockWarehouse: String(product.stockWarehouse),
       featured: product.featured,
     });
     setError(null);
@@ -123,6 +125,7 @@ export function ProductsTable({
         subcategoryId: form.subcategoryId || null,
         imageUrl: form.imageUrl,
         stock: Number(form.stock),
+        stockWarehouse: Number(form.stockWarehouse || 0),
         featured: form.featured,
       };
       const res = await fetch(editingId ? `/api/products/${editingId}` : "/api/products", {
@@ -145,6 +148,27 @@ export function ProductsTable({
   async function handleDelete(id: string) {
     if (!confirm("Энэ барааг устгах уу? Энэ үйлдлийг буцаах боломжгүй.")) return;
     await fetch(`/api/products/${id}`, { method: "DELETE" });
+    router.refresh();
+  }
+
+  async function handleTransfer(product: ProductDTO) {
+    const input = prompt(
+      `"${product.name}" — агуулахаас (${product.stockWarehouse}) лангуун дээр (${product.stock}) хэдийг шилжүүлэх вэ?\nСөрөг тоо оруулбал лангуунаас агуулах руу буцна.`,
+      "0"
+    );
+    if (input === null) return;
+    const quantity = Number(input);
+    if (!Number.isInteger(quantity) || quantity === 0) return;
+    const res = await fetch(`/api/products/${product.id}/transfer-stock`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ quantity }),
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      alert(data?.error ?? "Шилжүүлэхэд алдаа гарлаа.");
+      return;
+    }
     router.refresh();
   }
 
@@ -228,7 +252,21 @@ export function ProductsTable({
                   </select>
                 </div>
               </div>
-              <Field label="Нөөц" type="number" value={form.stock} onChange={(v) => setForm({ ...form, stock: v })} required />
+              <div className="grid grid-cols-2 gap-u-sm">
+                <Field
+                  label="Лангуун дээр"
+                  type="number"
+                  value={form.stock}
+                  onChange={(v) => setForm({ ...form, stock: v })}
+                  required
+                />
+                <Field
+                  label="Агуулахад"
+                  type="number"
+                  value={form.stockWarehouse}
+                  onChange={(v) => setForm({ ...form, stockWarehouse: v })}
+                />
+              </div>
               <div>
                 <label className="block font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">
                   Зураг
@@ -295,20 +333,22 @@ export function ProductsTable({
       )}
 
       <div className="item-card-shadow bg-surface-container-lowest rounded-lg overflow-x-auto">
-        <table className="w-full text-left min-w-[700px]">
+        <table className="w-full text-left min-w-[900px]">
           <thead className="bg-surface-container-low">
             <tr>
               <th className="px-u-md py-3 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Бараа</th>
               <th className="px-u-md py-3 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Ангилал</th>
               <th className="px-u-md py-3 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Үнэ</th>
-              <th className="px-u-md py-3 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Нөөц</th>
+              <th className="px-u-md py-3 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Лангуунд</th>
+              <th className="px-u-md py-3 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Агуулахад</th>
+              <th className="px-u-md py-3 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Нийт</th>
               <th className="px-u-md py-3 font-label-sm text-label-sm text-secondary uppercase tracking-wider text-right">Үйлдэл</th>
             </tr>
           </thead>
           <tbody>
             {products.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-u-md py-6 text-center text-secondary">
+                <td colSpan={7} className="px-u-md py-6 text-center text-secondary">
                   Бараа алга.
                 </td>
               </tr>
@@ -322,8 +362,17 @@ export function ProductsTable({
                   </td>
                   <td className="px-u-md py-3">{formatMNT(product.price)}</td>
                   <td className={`px-u-md py-3 ${product.stock <= 5 ? "text-error" : ""}`}>{product.stock}</td>
-                  <td className="px-u-md py-3 text-right">
-                    <button onClick={() => openEdit(product)} className="text-secondary hover:text-primary transition-colors">
+                  <td className="px-u-md py-3 text-secondary">{product.stockWarehouse}</td>
+                  <td className="px-u-md py-3 font-label-md">{product.stock + product.stockWarehouse}</td>
+                  <td className="px-u-md py-3 text-right whitespace-nowrap">
+                    <button
+                      onClick={() => handleTransfer(product)}
+                      title="Агуулах ⇄ лангуу шилжүүлэх"
+                      className="text-secondary hover:text-primary transition-colors"
+                    >
+                      <MaterialIcon name="swap_horiz" className="text-lg" />
+                    </button>
+                    <button onClick={() => openEdit(product)} className="text-secondary hover:text-primary transition-colors ml-2">
                       <MaterialIcon name="edit" className="text-lg" />
                     </button>
                     <button onClick={() => handleDelete(product.id)} className="text-secondary hover:text-error transition-colors ml-2">

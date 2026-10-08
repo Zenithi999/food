@@ -7,8 +7,8 @@ import { formatMNT, formatDateMN } from "@/lib/format";
 
 const STATUS_LABELS: Record<string, string> = {
   PENDING: "Хүлээгдэж буй",
-  SHIPPED: "Хүргэлтэнд гарсан",
-  DELIVERED: "Хүргэгдсэн",
+  SHIPPED: "Бэлэн болсон",
+  DELIVERED: "Дууссан",
   CANCELLED: "Цуцлагдсан",
 };
 
@@ -48,13 +48,13 @@ export default async function OrdersPage({
             href="/"
             className="inline-block bg-primary text-on-primary py-3 px-8 rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity"
           >
-            ДЭЛГҮҮР ХЭСЭХ
+            ДЭЛГҮҮР ХАРАХ
           </Link>
         </div>
       ) : (
         <div className="space-y-u-md">
           {orders.map((order) => (
-            <div key={order.id} className="item-card-shadow bg-surface-container-lowest rounded-lg p-u-md">
+            <div key={order.id} className="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-4 md:p-u-md">
               <div className="flex flex-wrap justify-between items-start gap-u-sm mb-u-sm">
                 <div>
                   <p className="font-label-md text-label-md text-primary">Захиалга #{order.id.slice(-6).toUpperCase()}</p>
@@ -68,24 +68,38 @@ export default async function OrdersPage({
               <div className="divide-y divide-outline-variant border-t border-b border-outline-variant mb-u-sm">
                 {order.items.map((item) => (
                   <div key={item.productId} className="flex items-center gap-u-sm py-u-sm">
-                    <div className="w-14 h-14 rounded overflow-hidden flex-shrink-0 relative bg-surface-container-low">
-                      <Image src={item.imageUrl} alt={item.name} fill sizes="56px" className="object-cover" />
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden flex-shrink-0 relative bg-white">
+                      <Image src={item.imageUrl} alt={item.name} fill sizes="56px" className="object-contain p-0.5" />
                     </div>
-                    <div className="flex-grow">
-                      <p className="font-label-md text-label-md">{item.name}</p>
+                    <div className="flex-grow min-w-0">
+                      <p className="text-sm font-medium leading-snug line-clamp-2">{item.name}</p>
                       <p className="text-label-sm text-secondary">
                         {item.quantity} x {formatMNT(item.price)}
                       </p>
                     </div>
-                    <p className="font-label-md text-label-md">{formatMNT(item.price * item.quantity)}</p>
+                    <p className="shrink-0 text-sm font-semibold">{formatMNT(item.price * item.quantity)}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="flex justify-between items-center">
-                <p className="text-label-sm text-secondary">{order.address}</p>
-                <p className="font-headline-md text-headline-md text-primary">{formatMNT(order.total)}</p>
+              <div className="flex justify-between items-center gap-3">
+                <p className="text-label-sm text-secondary min-w-0 truncate">{order.address}</p>
+                <p className="shrink-0 font-headline-md text-headline-md text-primary">{formatMNT(order.total)}</p>
               </div>
+
+              {order.paymentStatus === "PENDING" && (order.paymentType === "CREDIT" || order.paymentType === "QPAY") && (
+                <div className="mt-u-sm pt-u-sm border-t border-outline-variant flex items-center justify-between gap-3">
+                  <p className="text-label-sm text-error">
+                    {order.paymentType === "CREDIT" ? "Зээлийн үлдэгдэл төлөгдөөгүй байна." : "Төлбөр хийгдээгүй байна."}
+                  </p>
+                  <Link
+                    href={`/orders/${order.id}/pay`}
+                    className="shrink-0 bg-primary text-on-primary py-2 px-5 rounded-full font-label-sm text-label-sm hover:opacity-90 transition-opacity"
+                  >
+                    Төлөх
+                  </Link>
+                </div>
+              )}
             </div>
           ))}
         </div>

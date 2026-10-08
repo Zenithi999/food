@@ -16,7 +16,7 @@ const hankenGrotesk = Hanken_Grotesk({
 
 export const metadata: Metadata = {
   title: "ХүнсМаркет | Шинэ хүнсний бүтээгдэхүүн",
-  description: "Танай гэрт хүргэх шинэ, чанартай хүнсний бүтээгдэхүүн.",
+  description: "Шинэ, чанартай хүнсний бүтээгдэхүүн.",
 };
 
 export default function RootLayout({

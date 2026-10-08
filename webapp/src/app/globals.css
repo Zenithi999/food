@@ -2,52 +2,52 @@
 
 :root {
   --color-on-error-container: #93000a;
-  --color-inverse-primary: #b8cda9;
+  --color-inverse-primary: #f79c8f;
   --color-error: #ba1a1a;
-  --color-on-background: #1b1c1c;
-  --color-surface-container-high: #eae7e7;
-  --color-secondary-fixed-dim: #c7c7c2;
-  --color-surface-container-low: #f6f3f2;
-  --color-surface-variant: #e4e2e1;
-  --color-on-tertiary-fixed: #171d13;
-  --color-on-surface: #1b1c1c;
-  --color-tertiary-fixed: #dee5d5;
-  --color-surface-dim: #dcd9d9;
-  --color-on-primary-fixed: #0f1f09;
-  --color-on-primary-fixed-variant: #3a4c31;
+  --color-on-background: #2b1b12;
+  --color-surface-container-high: #f1dab9;
+  --color-secondary-fixed-dim: #e0c08c;
+  --color-surface-container-low: #fbeedd;
+  --color-surface-variant: #f3e0c4;
+  --color-on-tertiary-fixed: #12260a;
+  --color-on-surface: #2b1b12;
+  --color-tertiary-fixed: #dcefc9;
+  --color-surface-dim: #ead0a6;
+  --color-on-primary-fixed: #3a0a05;
+  --color-on-primary-fixed-variant: #a82e20;
   --color-on-secondary: #ffffff;
-  --color-primary-container: #5e7153;
-  --color-on-secondary-fixed: #1b1c19;
+  --color-primary-container: #fcd9cf;
+  --color-on-secondary-fixed: #2b1b12;
   --color-error-container: #ffdad6;
   --color-on-tertiary: #ffffff;
-  --color-background: #fcf9f8;
-  --color-secondary-fixed: #e3e3de;
-  --color-on-secondary-fixed-variant: #464744;
-  --color-tertiary-container: #676e61;
+  --color-background: #fdf3e7;
+  --color-secondary-fixed: #f1dab9;
+  --color-on-secondary-fixed-variant: #6b5847;
+  --color-tertiary-container: #dcefc9;
   --color-surface-container-lowest: #ffffff;
-  --color-primary-fixed: #d4e9c4;
-  --color-on-secondary-container: #646561;
-  --color-tertiary: #4f5649;
+  --color-primary-fixed: #fcd9cf;
+  --color-on-secondary-container: #4a3826;
+  --color-tertiary: #5b9a3b;
   --color-on-error: #ffffff;
-  --color-on-primary-container: #dff4cf;
-  --color-surface: #fcf9f8;
-  --color-outline: #74786f;
-  --color-secondary-container: #e3e3de;
-  --color-surface-container: #f0eded;
-  --color-on-surface-variant: #444840;
-  --color-on-tertiary-container: #eaf1e0;
-  --color-on-tertiary-fixed-variant: #42493d;
-  --color-secondary: #5e5f5b;
-  --color-inverse-surface: #303030;
+  --color-on-primary-container: #7a1f16;
+  --color-surface: #fdf3e7;
+  --color-outline: #c9ae8b;
+  --color-secondary-container: #f1dab9;
+  --color-surface-container: #f7e6ce;
+  --color-on-surface-variant: #6b5847;
+  --color-on-tertiary-container: #1f3a10;
+  --color-on-tertiary-fixed-variant: #355c1e;
+  --color-secondary: #8a6f55;
+  --color-inverse-surface: #3a2a1d;
   --color-on-primary: #ffffff;
-  --color-outline-variant: #c4c8bd;
-  --color-surface-bright: #fcf9f8;
-  --color-primary: #46583c;
-  --color-surface-container-highest: #e4e2e1;
-  --color-primary-fixed-dim: #b8cda9;
-  --color-inverse-on-surface: #f3f0f0;
-  --color-surface-tint: #516447;
-  --color-tertiary-fixed-dim: #c2c9b9;
+  --color-outline-variant: #e7d3b5;
+  --color-surface-bright: #fdf3e7;
+  --color-primary: #ef4b3d;
+  --color-surface-container-highest: #ead0a6;
+  --color-primary-fixed-dim: #f79c8f;
+  --color-inverse-on-surface: #fbeedd;
+  --color-surface-tint: #ef4b3d;
+  --color-tertiary-fixed-dim: #a8d480;
 }
 
 @theme inline {
@@ -100,21 +100,21 @@
   --color-tertiary-fixed-dim: var(--color-tertiary-fixed-dim);
 
   /* Radii */
-  --radius: 0.125rem;
-  --radius-lg: 0.25rem;
-  --radius-xl: 0.5rem;
-  --radius-full: 0.75rem;
+  --radius: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.75rem;
+  --radius-full: 9999px;
 
   /* Spacing tokens, prefixed "u-" so they don't collide with Tailwind's
      built-in xs/sm/md/lg/xl scale used by max-w-*, w-*, etc.
      (used as p-u-base, gap-u-lg, px-margin-desktop, etc.) */
   --spacing-u-base: 8px;
-  --spacing-u-lg: 48px;
+  --spacing-u-lg: clamp(28px, 5vw, 48px);
   --spacing-u-xs: 4px;
   --spacing-margin-mobile: 16px;
   --spacing-gutter: 24px;
   --spacing-container-max: 1280px;
-  --spacing-u-xl: 80px;
+  --spacing-u-xl: clamp(40px, 8vw, 80px);
   --spacing-u-sm: 12px;
   --spacing-u-md: 24px;
   --spacing-margin-desktop: 40px;
@@ -130,7 +130,7 @@
   --font-label-sm: var(--font-hanken-grotesk), sans-serif;
 
   /* Font sizes: size--line-height, size--font-weight, size--letter-spacing */
-  --text-headline-md: 24px;
+  --text-headline-md: clamp(18px, 3.2vw, 24px);
   --text-headline-md--line-height: 1.3;
   --text-headline-md--font-weight: 500;
 
@@ -138,7 +138,7 @@
   --text-headline-lg-mobile--line-height: 1.2;
   --text-headline-lg-mobile--font-weight: 500;
 
-  --text-display-lg: 48px;
+  --text-display-lg: clamp(30px, 6vw, 48px);
   --text-display-lg--line-height: 1.1;
   --text-display-lg--letter-spacing: -0.02em;
   --text-display-lg--font-weight: 500;
@@ -156,13 +156,18 @@
   --text-body-md--line-height: 1.6;
   --text-body-md--font-weight: 400;
 
-  --text-headline-lg: 32px;
+  --text-headline-lg: clamp(24px, 4.5vw, 32px);
   --text-headline-lg--line-height: 1.2;
   --text-headline-lg--font-weight: 500;
 
   --text-label-sm: 12px;
   --text-label-sm--line-height: 1.2;
   --text-label-sm--font-weight: 500;
+}
+
+html,
+body {
+  overflow-x: clip;
 }
 
 body {
@@ -184,16 +189,16 @@ body {
 }
 
 .item-card-shadow {
-  box-shadow: 0 4px 20px rgba(94, 113, 83, 0.08);
+  box-shadow: 0 8px 24px rgba(239, 75, 61, 0.1);
 }
 .item-card-shadow:hover {
-  box-shadow: 0 8px 30px rgba(94, 113, 83, 0.12);
+  box-shadow: 0 12px 32px rgba(239, 75, 61, 0.18);
   transform: translateY(-2px);
   transition: all 0.3s ease-out;
 }
 
 .hero-overlay {
-  background: linear-gradient(180deg, rgba(27, 28, 28, 0.05) 0%, rgba(27, 28, 28, 0.55) 100%);
+  background: linear-gradient(180deg, rgba(43, 27, 18, 0.05) 0%, rgba(43, 27, 18, 0.55) 100%);
 }
 
 @keyframes payment-success-scale-in {

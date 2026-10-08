@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const payment = await getPaymentByOrderId(orderId);
-    if (!payment || payment.type !== "QPAY" || !payment.qpayInvoiceId) {
+    if (!payment || !payment.qpayInvoiceId) {
       return NextResponse.json({ ok: true });
     }
     if (payment.status === "SUCCESS") {

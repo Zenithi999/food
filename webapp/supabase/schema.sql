@@ -47,6 +47,10 @@ create table if not exists products (
   updated_at timestamptz not null default now()
 );
 
+-- `stock` баганыг цаашид "лангуун дээр" (борлуулалтад бэлэн) нөөц гэж тооцно;
+-- `stock_warehouse` нь "агуулахад" байгаа нөөц — лангуу дуусахад эндээс шилжүүлнэ.
+alter table products add column if not exists stock_warehouse integer not null default 0;
+
 create table if not exists orders (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references users(id),
@@ -82,6 +86,15 @@ alter table orders add column if not exists payment_type text not null default '
   check (payment_type in ('CASH', 'CREDIT', 'QPAY'));
 alter table orders add column if not exists idempotency_key text;
 
+-- Кассын (POS) захиалгыг онлайн захиалгаас ялгахад ашиглана.
+alter table orders add column if not exists source text not null default 'ONLINE'
+  check (source in ('ONLINE', 'POS'));
+
+-- Дансаар (банкны шилжүүлгээр) төлбөрийг нэмж зөвшөөрнө.
+alter table orders drop constraint if exists orders_payment_type_check;
+alter table orders add constraint orders_payment_type_check
+  check (payment_type in ('CASH', 'CREDIT', 'QPAY', 'BANK'));
+
 create unique index if not exists idx_orders_idempotency_key
   on orders(idempotency_key) where idempotency_key is not null;
 
@@ -90,7 +103,7 @@ create unique index if not exists idx_orders_idempotency_key
 create table if not exists payments (
   id uuid primary key default gen_random_uuid(),
   order_id uuid not null references orders(id) on delete cascade,
-  type text not null check (type in ('CASH', 'CREDIT', 'QPAY')),
+  type text not null check (type in ('CASH', 'CREDIT', 'QPAY', 'BANK')),
   amount numeric not null,
   status text not null default 'PENDING' check (status in ('PENDING', 'SUCCESS', 'FAILED')),
   qpay_invoice_id text,
@@ -143,7 +156,8 @@ create or replace function create_order(
   p_items jsonb, -- [{"product_id": "uuid", "quantity": 2}, ...]
   p_payment_type text default 'CASH',
   p_company_id uuid default null,
-  p_idempotency_key text default null
+  p_idempotency_key text default null,
+  p_source text default 'ONLINE'
 ) returns uuid
 language plpgsql
 security definer
@@ -153,7 +167,6 @@ declare
   v_item jsonb;
   v_product products%rowtype;
   v_subtotal numeric := 0;
-  v_shipping numeric;
   v_vat numeric;
   v_total numeric;
   v_payment_status text;
@@ -177,12 +190,11 @@ begin
     v_subtotal := v_subtotal + v_product.price * (v_item->>'quantity')::int;
   end loop;
 
-  v_shipping := case when v_subtotal >= 50000 then 0 else 5000 end;
   v_vat := v_subtotal * 0.1;
-  v_total := v_subtotal + v_shipping + v_vat;
+  v_total := v_subtotal + v_vat;
 
-  insert into orders (user_id, status, total, address, phone, note, payment_type, company_id, idempotency_key)
-  values (p_user_id, 'PENDING', v_total, p_address, p_phone, p_note, p_payment_type, p_company_id, p_idempotency_key)
+  insert into orders (user_id, status, total, address, phone, note, payment_type, company_id, idempotency_key, source)
+  values (p_user_id, 'PENDING', v_total, p_address, p_phone, p_note, p_payment_type, p_company_id, p_idempotency_key, p_source)
   returning id into v_order_id;
 
   for v_item in select * from jsonb_array_elements(p_items)
@@ -195,7 +207,8 @@ begin
     update products set stock = stock - (v_item->>'quantity')::int where id = v_product.id;
   end loop;
 
-  v_payment_status := case when p_payment_type = 'QPAY' then 'PENDING' else 'SUCCESS' end;
+  -- QPay: төлбөр баталгаажих хүртэл PENDING. Зээл: байгууллага эргэн төлөх хүртэл PENDING.
+  v_payment_status := case when p_payment_type in ('QPAY', 'CREDIT') then 'PENDING' else 'SUCCESS' end;
   insert into payments (order_id, type, amount, status)
   values (v_order_id, p_payment_type, v_total, v_payment_status);
 
@@ -227,5 +240,36 @@ begin
   values (p_user_name, p_user_email, p_user_phone, p_password_hash, 'COMPANY', v_company_id);
 
   return v_company_id;
+end;
+$$;
+
+-- Агуулахаас лангуун дээр (эсвэл эсрэгээр) нөөц шилжүүлэхийг атомик хийнэ.
+create or replace function transfer_stock(
+  p_product_id uuid,
+  p_quantity int -- эерэг бол агуулах->лангуу, сөрөг бол лангуу->агуулах
+) returns void
+language plpgsql
+security definer
+as $$
+declare
+  v_product products%rowtype;
+begin
+  select * into v_product from products where id = p_product_id for update;
+  if not found then
+    raise exception 'Бараа олдсонгүй.';
+  end if;
+
+  if p_quantity > 0 and v_product.stock_warehouse < p_quantity then
+    raise exception 'Агуулахын нөөц хүрэлцэхгүй байна.';
+  end if;
+  if p_quantity < 0 and v_product.stock < -p_quantity then
+    raise exception 'Лангуун дээрх нөөц хүрэлцэхгүй байна.';
+  end if;
+
+  update products
+  set stock = stock + p_quantity,
+      stock_warehouse = stock_warehouse - p_quantity,
+      updated_at = now()
+  where id = p_product_id;
 end;
 $$;

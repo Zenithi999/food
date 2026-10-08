@@ -1,6 +1,7 @@
 export type Role = "CUSTOMER" | "ADMIN" | "COMPANY";
 export type OrderStatus = "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
-export type PaymentType = "CASH" | "CREDIT" | "QPAY";
+export type PaymentType = "CASH" | "CREDIT" | "QPAY" | "BANK";
+export type OrderSource = "ONLINE" | "POS";
 export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED";
 
 export interface CategoryDTO {
@@ -33,6 +34,7 @@ export interface ProductDTO {
   subcategoryName: string | null;
   imageUrl: string;
   stock: number;
+  stockWarehouse: number;
   featured: boolean;
   createdAt: string;
 }
@@ -71,6 +73,7 @@ export interface OrderDTO {
   companyName: string | null;
   paymentType: PaymentType;
   paymentStatus: PaymentStatus;
+  source: OrderSource;
 }
 
 export interface CompanyDTO {

@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CartItem, ProductDTO } from "@/types";
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 interface CartState {
   items: CartItem[];
   addItem: (product: ProductDTO, quantity?: number) => void;
@@ -50,7 +52,14 @@ export const useCartStore = create<CartState>()(
       },
       clear: () => set({ items: [] }),
     }),
-    { name: "oh-cart" }
+    {
+      name: "oh-cart",
+      // Шинэчлэлийн өмнөх (uuid биш) бараа ID-тай хуучин сагсыг автоматаар цэвэрлэнэ.
+      merge: (persisted, current) => {
+        const items = (persisted as Partial<CartState> | undefined)?.items ?? [];
+        return { ...current, items: items.filter((i) => UUID_REGEX.test(i.productId)) };
+      },
+    }
   )
 );
 

@@ -6,6 +6,7 @@ import { MaterialIcon } from "@/components/MaterialIcon";
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Хянах самбар", icon: "dashboard" },
+  { href: "/admin/pos", label: "Касс", icon: "point_of_sale" },
   { href: "/admin/products", label: "Бараа", icon: "inventory_2" },
   { href: "/admin/categories", label: "Ангилал", icon: "category" },
   { href: "/admin/orders", label: "Захиалгууд", icon: "receipt_long" },

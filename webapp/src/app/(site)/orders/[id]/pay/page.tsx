@@ -153,7 +153,16 @@ export default function QPayPayPage({ params }: { params: Promise<{ id: string }
               <p className="text-label-sm text-secondary">QPay апп-аар уншуулж төлбөрөө хийнэ үү.</p>
             </>
           ) : (
-            <p className="text-secondary">QR код олдсонгүй.</p>
+            <>
+              <p className="text-secondary mb-u-md">QR код үүсээгүй байна.</p>
+              <button
+                onClick={retryInvoice}
+                disabled={retrying}
+                className="w-full bg-primary text-on-primary py-3 rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity disabled:opacity-60"
+              >
+                {retrying ? "Үүсгэж байна..." : "QPay QR код үүсгэх"}
+              </button>
+            </>
           )}
 
           {status === "timeout" && (

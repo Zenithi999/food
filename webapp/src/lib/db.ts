@@ -6,6 +6,7 @@ import type {
   UserDTO,
   OrderDTO,
   OrderStatus,
+  OrderSource,
   Role,
   CompanyDTO,
   PaymentType,
@@ -133,6 +134,18 @@ export async function createCompany(input: {
   const { data, error: fetchError } = await getSupabase().from("companies").select("*").eq("id", companyId).single();
   if (fetchError) throw fetchError;
   return toCompanyDTO(data);
+}
+
+export async function getCompanyUser(companyId: string): Promise<UserRecord | null> {
+  const { data, error } = await getSupabase()
+    .from("users")
+    .select("*")
+    .eq("company_id", companyId)
+    .eq("role", "COMPANY")
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? toUserRecord(data) : null;
 }
 
 export async function listCustomers(): Promise<(UserDTO & { orderCount: number })[]> {
@@ -299,6 +312,7 @@ interface ProductRow {
   subcategory_id: string | null;
   image_url: string;
   stock: number;
+  stock_warehouse: number;
   featured: boolean;
   created_at: string;
   category: { name: string } | { name: string }[] | null;
@@ -321,6 +335,7 @@ function toProductDTO(p: ProductRow): ProductDTO {
     subcategoryName: subcategory?.name ?? null,
     imageUrl: p.image_url,
     stock: p.stock,
+    stockWarehouse: p.stock_warehouse,
     featured: p.featured,
     createdAt: p.created_at,
   };
@@ -367,6 +382,7 @@ export interface ProductInput {
   subcategoryName: string | null;
   imageUrl: string;
   stock: number;
+  stockWarehouse: number;
   featured: boolean;
 }
 
@@ -383,6 +399,7 @@ export async function createProduct(input: ProductInput): Promise<ProductDTO> {
       subcategory_id: input.subcategoryId,
       image_url: input.imageUrl,
       stock: input.stock,
+      stock_warehouse: input.stockWarehouse,
       featured: input.featured,
     })
     .select(PRODUCT_SELECT)
@@ -402,6 +419,7 @@ export async function updateProduct(id: string, input: Partial<ProductInput>): P
   if (input.subcategoryId !== undefined) update.subcategory_id = input.subcategoryId;
   if (input.imageUrl !== undefined) update.image_url = input.imageUrl;
   if (input.stock !== undefined) update.stock = input.stock;
+  if (input.stockWarehouse !== undefined) update.stock_warehouse = input.stockWarehouse;
   if (input.featured !== undefined) update.featured = input.featured;
   update.updated_at = new Date().toISOString();
 
@@ -411,6 +429,14 @@ export async function updateProduct(id: string, input: Partial<ProductInput>): P
 
 export async function deleteProduct(id: string): Promise<void> {
   const { error } = await getSupabase().from("products").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function transferStock(productId: string, quantity: number): Promise<void> {
+  const { error } = await getSupabase().rpc("transfer_stock", {
+    p_product_id: productId,
+    p_quantity: quantity,
+  });
   if (error) throw error;
 }
 
@@ -435,6 +461,7 @@ interface OrderRow {
   created_at: string;
   company_id: string | null;
   payment_type: string;
+  source: string;
   user: { name: string; email: string } | { name: string; email: string }[] | null;
   company: { name: string } | { name: string }[] | null;
   payments: { status: string }[] | null;
@@ -477,6 +504,7 @@ function toOrderDTO(o: OrderRow): OrderDTO {
     companyName: company?.name ?? null,
     paymentType: o.payment_type as PaymentType,
     paymentStatus: (o.payments?.[0]?.status as PaymentStatus) ?? "PENDING",
+    source: o.source as OrderSource,
   };
 }
 
@@ -518,6 +546,7 @@ export interface CreateOrderInput {
   paymentType: PaymentType;
   companyId: string | null;
   idempotencyKey: string;
+  source?: OrderSource;
 }
 
 export class OrderError extends Error {}
@@ -533,6 +562,7 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderDTO> {
     p_payment_type: input.paymentType,
     p_company_id: input.companyId,
     p_idempotency_key: input.idempotencyKey,
+    p_source: input.source ?? "ONLINE",
   });
 
   if (error) {

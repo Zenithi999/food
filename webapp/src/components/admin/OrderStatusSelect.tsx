@@ -5,8 +5,8 @@ import { useState } from "react";
 
 const STATUSES = [
   { value: "PENDING", label: "Хүлээгдэж буй" },
-  { value: "SHIPPED", label: "Хүргэлтэнд гарсан" },
-  { value: "DELIVERED", label: "Хүргэгдсэн" },
+  { value: "SHIPPED", label: "Бэлэн болсон" },
+  { value: "DELIVERED", label: "Дууссан" },
   { value: "CANCELLED", label: "Цуцлагдсан" },
 ];
 

@@ -20,8 +20,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 
   const payment = await getPaymentByOrderId(id);
-  if (!payment || payment.type !== "QPAY") {
-    return NextResponse.json({ error: "QPay төлбөр биш захиалга." }, { status: 400 });
+  if (!payment) {
+    return NextResponse.json({ error: "Төлбөрийн бичлэг олдсонгүй." }, { status: 400 });
   }
   if (payment.status === "SUCCESS") {
     return NextResponse.json({ error: "Захиалга аль хэдийн төлөгдсөн байна." }, { status: 409 });

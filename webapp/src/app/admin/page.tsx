@@ -3,8 +3,8 @@ import { formatMNT } from "@/lib/format";
 
 const STATUS_LABELS: Record<string, string> = {
   PENDING: "Хүлээгдэж буй",
-  SHIPPED: "Хүргэлтэнд гарсан",
-  DELIVERED: "Хүргэгдсэн",
+  SHIPPED: "Бэлэн болсон",
+  DELIVERED: "Дууссан",
   CANCELLED: "Цуцлагдсан",
 };
 
