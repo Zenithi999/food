@@ -51,15 +51,15 @@ export function Header({ initialSession }: { initialSession: SessionUser | null 
             <span className="font-headline-md text-xl md:text-headline-md font-semibold text-on-surface">ХүнсМаркет</span>
           </Link>
           <nav className="hidden md:flex items-center gap-u-md">
-            <Link href="/" className="relative py-1 text-on-surface font-semibold hover:text-primary transition-colors font-label-md text-label-md group">
+            <Link href="/" className="relative py-1 whitespace-nowrap text-on-surface font-semibold hover:text-primary transition-colors font-label-md text-label-md group">
               Дэлгүүр
               <span className="absolute left-0 -bottom-1 w-full h-[2px] bg-primary" />
             </Link>
-            <Link href="/orders" className="relative py-1 text-secondary hover:text-primary transition-colors font-label-md text-label-md group">
+            <Link href="/orders" className="relative py-1 whitespace-nowrap text-secondary hover:text-primary transition-colors font-label-md text-label-md group">
               Захиалгууд
               <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all duration-200 group-hover:w-full" />
             </Link>
-            <a href="#" className="relative py-1 text-secondary hover:text-primary transition-colors font-label-md text-label-md group">
+            <a href="#" className="relative py-1 whitespace-nowrap text-secondary hover:text-primary transition-colors font-label-md text-label-md group">
               Бидний тухай
               <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all duration-200 group-hover:w-full" />
             </a>

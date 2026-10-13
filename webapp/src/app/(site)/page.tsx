@@ -1,8 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { listProducts, listCategories, listSubcategories } from "@/lib/db";
 import { ProductCard } from "@/components/ProductCard";
-import { CategoryCarousel } from "@/components/CategoryCarousel";
+import { CategorySpotlight, type SpotlightCategory } from "@/components/CategorySpotlight";
 import { MaterialIcon } from "@/components/MaterialIcon";
 
 export default async function HomePage({
@@ -45,57 +44,21 @@ export default async function HomePage({
     return ai - bi;
   });
 
+  let spotlight: SpotlightCategory[] = [];
+  if (showBrowse) {
+    const allProducts = await listProducts();
+    spotlight = orderedCategories.map((c) => ({
+      id: c.id,
+      name: c.name,
+      imageUrl: c.imageUrl,
+      products: allProducts.filter((p) => p.categoryId === c.id),
+    }));
+  }
+
   return (
     <>
       {showBrowse ? (
-        <>
-          <section className="w-full bg-background overflow-hidden">
-            <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 md:pt-u-xl pb-2 md:pb-4 flex flex-col md:flex-row items-center gap-8 md:gap-u-lg">
-              <div className="flex-1 text-center md:text-left">
-                <h1 className="font-display-lg text-[32px] leading-[1.15] sm:text-[40px] md:text-display-lg text-on-surface max-w-lg mx-auto md:mx-0 mb-3 md:mb-u-sm">
-                  Өдөр тутмын <span className="text-primary">хүнс</span>,{" "}
-                  <span className="text-[#f5a623]">шинэ</span> бүтээгдэхүүн
-                </h1>
-                <p className="text-secondary text-body-md md:text-body-lg max-w-md mx-auto md:mx-0 mb-5 md:mb-u-md">
-                  Шинэ, чанартай хүнсний бүтээгдэхүүнийг хамгийн сайн үнээр.
-                </p>
-                <a
-                  href="#shop"
-                  className="inline-flex items-center gap-2 bg-primary text-on-primary py-3 md:py-3.5 px-7 md:px-8 rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity active:scale-[0.98] duration-150 shadow-[0_10px_24px_-8px_rgba(239,75,61,0.6)]"
-                >
-                  Захиалж эхлэх
-                  <MaterialIcon name="arrow_downward" className="text-base" />
-                </a>
-              </div>
-              <div className="relative flex-1 w-full max-w-md flex items-center justify-center">
-                <div className="w-[230px] sm:w-[280px] md:w-full md:max-w-sm aspect-square rounded-full overflow-hidden relative ring-[6px] md:ring-8 ring-white shadow-xl">
-                  <Image
-                    src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80"
-                    alt="Хүнсний дэлгүүрийн шинэ ногоо, жимсний лангуу"
-                    fill
-                    priority
-                    sizes="(max-width: 768px) 280px, 400px"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="hidden md:flex absolute -bottom-2 left-0 bg-surface-container-lowest rounded-2xl p-4 items-center gap-3 item-card-shadow">
-                  <span className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-container text-primary">
-                    <MaterialIcon name="storefront" className="text-xl" />
-                  </span>
-                  <div>
-                    <p className="font-label-md text-label-md text-on-surface">Дэлгүүрт бэлэн</p>
-                    <p className="text-label-sm text-secondary">Шинэ бараа өдөр бүр орж ирнэ</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-0 md:pt-2 pb-8 md:pb-u-xl w-full scroll-mt-20" id="shop">
-            <h2 className="font-headline-lg text-[26px] md:text-headline-lg text-on-surface mb-2 md:mb-u-md text-center">Ангиллаар үзэх</h2>
-            <CategoryCarousel categories={orderedCategories} />
-          </div>
-        </>
+        <CategorySpotlight categories={spotlight} />
       ) : (
         <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-5 md:py-u-lg w-full" id="shop">
           <div className="flex flex-col gap-3 md:gap-u-md mb-5 md:mb-u-lg">

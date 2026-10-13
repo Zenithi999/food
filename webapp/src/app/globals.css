@@ -2,52 +2,52 @@
 
 :root {
   --color-on-error-container: #93000a;
-  --color-inverse-primary: #f79c8f;
+  --color-inverse-primary: #f4a06a;
   --color-error: #ba1a1a;
-  --color-on-background: #2b1b12;
-  --color-surface-container-high: #f1dab9;
-  --color-secondary-fixed-dim: #e0c08c;
-  --color-surface-container-low: #fbeedd;
-  --color-surface-variant: #f3e0c4;
-  --color-on-tertiary-fixed: #12260a;
-  --color-on-surface: #2b1b12;
-  --color-tertiary-fixed: #dcefc9;
-  --color-surface-dim: #ead0a6;
-  --color-on-primary-fixed: #3a0a05;
-  --color-on-primary-fixed-variant: #a82e20;
+  --color-on-background: #3a3a3a;
+  --color-surface-container-high: #dfddda;
+  --color-secondary-fixed-dim: #cfcdca;
+  --color-surface-container-low: #eceae7;
+  --color-surface-variant: #e6e4e1;
+  --color-on-tertiary-fixed: #3a1a06;
+  --color-on-surface: #3a3a3a;
+  --color-tertiary-fixed: #fbe3d3;
+  --color-surface-dim: #d8d6d3;
+  --color-on-primary-fixed: #1a1a1a;
+  --color-on-primary-fixed-variant: #5a5a5a;
   --color-on-secondary: #ffffff;
-  --color-primary-container: #fcd9cf;
-  --color-on-secondary-fixed: #2b1b12;
+  --color-primary-container: #fbe3d3;
+  --color-on-secondary-fixed: #2a2a2a;
   --color-error-container: #ffdad6;
-  --color-on-tertiary: #ffffff;
-  --color-background: #fdf3e7;
-  --color-secondary-fixed: #f1dab9;
-  --color-on-secondary-fixed-variant: #6b5847;
-  --color-tertiary-container: #dcefc9;
+  --color-on-tertiary: #3a3a3a;
+  --color-background: #f2f1ef;
+  --color-secondary-fixed: #e6e4e1;
+  --color-on-secondary-fixed-variant: #5a5a5a;
+  --color-tertiary-container: #fbe3d3;
   --color-surface-container-lowest: #ffffff;
-  --color-primary-fixed: #fcd9cf;
-  --color-on-secondary-container: #4a3826;
-  --color-tertiary: #5b9a3b;
+  --color-primary-fixed: #e6e4e1;
+  --color-on-secondary-container: #4a4a4a;
+  --color-tertiary: #f4a06a;
   --color-on-error: #ffffff;
-  --color-on-primary-container: #7a1f16;
-  --color-surface: #fdf3e7;
-  --color-outline: #c9ae8b;
-  --color-secondary-container: #f1dab9;
-  --color-surface-container: #f7e6ce;
-  --color-on-surface-variant: #6b5847;
-  --color-on-tertiary-container: #1f3a10;
-  --color-on-tertiary-fixed-variant: #355c1e;
-  --color-secondary: #8a6f55;
-  --color-inverse-surface: #3a2a1d;
+  --color-on-primary-container: #8a4a22;
+  --color-surface: #f2f1ef;
+  --color-outline: #b8b6b3;
+  --color-secondary-container: #e6e4e1;
+  --color-surface-container: #e6e4e1;
+  --color-on-surface-variant: #6a6a6a;
+  --color-on-tertiary-container: #8a4a22;
+  --color-on-tertiary-fixed-variant: #8a4a22;
+  --color-secondary: #8a8a8a;
+  --color-inverse-surface: #3a3a3a;
   --color-on-primary: #ffffff;
-  --color-outline-variant: #e7d3b5;
-  --color-surface-bright: #fdf3e7;
-  --color-primary: #ef4b3d;
-  --color-surface-container-highest: #ead0a6;
-  --color-primary-fixed-dim: #f79c8f;
-  --color-inverse-on-surface: #fbeedd;
-  --color-surface-tint: #ef4b3d;
-  --color-tertiary-fixed-dim: #a8d480;
+  --color-outline-variant: #dedcd9;
+  --color-surface-bright: #f2f1ef;
+  --color-primary: #3a3a3a;
+  --color-surface-container-highest: #d8d6d3;
+  --color-primary-fixed-dim: #cfcdca;
+  --color-inverse-on-surface: #f2f1ef;
+  --color-surface-tint: #3a3a3a;
+  --color-tertiary-fixed-dim: #f4c3a2;
 }
 
 @theme inline {
@@ -120,32 +120,32 @@
   --spacing-margin-desktop: 40px;
 
   /* Font families */
-  --font-headline-md: var(--font-eb-garamond), serif;
-  --font-headline-lg-mobile: var(--font-eb-garamond), serif;
-  --font-display-lg: var(--font-eb-garamond), serif;
-  --font-headline-lg: var(--font-eb-garamond), serif;
-  --font-label-md: var(--font-hanken-grotesk), sans-serif;
-  --font-body-lg: var(--font-hanken-grotesk), sans-serif;
-  --font-body-md: var(--font-hanken-grotesk), sans-serif;
-  --font-label-sm: var(--font-hanken-grotesk), sans-serif;
+  --font-headline-md: var(--font-montserrat), sans-serif;
+  --font-headline-lg-mobile: var(--font-montserrat), sans-serif;
+  --font-display-lg: var(--font-montserrat), sans-serif;
+  --font-headline-lg: var(--font-montserrat), sans-serif;
+  --font-label-md: var(--font-montserrat), sans-serif;
+  --font-body-lg: var(--font-montserrat), sans-serif;
+  --font-body-md: var(--font-montserrat), sans-serif;
+  --font-label-sm: var(--font-montserrat), sans-serif;
 
   /* Font sizes: size--line-height, size--font-weight, size--letter-spacing */
-  --text-headline-md: clamp(18px, 3.2vw, 24px);
+  --text-headline-md: clamp(18px, 3.2vw, 22px);
   --text-headline-md--line-height: 1.3;
-  --text-headline-md--font-weight: 500;
+  --text-headline-md--font-weight: 700;
 
-  --text-headline-lg-mobile: 28px;
+  --text-headline-lg-mobile: 26px;
   --text-headline-lg-mobile--line-height: 1.2;
-  --text-headline-lg-mobile--font-weight: 500;
+  --text-headline-lg-mobile--font-weight: 700;
 
-  --text-display-lg: clamp(30px, 6vw, 48px);
+  --text-display-lg: clamp(28px, 5.5vw, 44px);
   --text-display-lg--line-height: 1.1;
   --text-display-lg--letter-spacing: -0.02em;
-  --text-display-lg--font-weight: 500;
+  --text-display-lg--font-weight: 800;
 
   --text-label-md: 14px;
   --text-label-md--line-height: 1.2;
-  --text-label-md--letter-spacing: 0.05em;
+  --text-label-md--letter-spacing: 0.01em;
   --text-label-md--font-weight: 600;
 
   --text-body-lg: 18px;
@@ -156,12 +156,12 @@
   --text-body-md--line-height: 1.6;
   --text-body-md--font-weight: 400;
 
-  --text-headline-lg: clamp(24px, 4.5vw, 32px);
+  --text-headline-lg: clamp(22px, 4vw, 30px);
   --text-headline-lg--line-height: 1.2;
-  --text-headline-lg--font-weight: 500;
+  --text-headline-lg--font-weight: 800;
 
   --text-label-sm: 12px;
-  --text-label-sm--line-height: 1.2;
+  --text-label-sm--line-height: 1.3;
   --text-label-sm--font-weight: 500;
 }
 
@@ -189,16 +189,16 @@ body {
 }
 
 .item-card-shadow {
-  box-shadow: 0 8px 24px rgba(239, 75, 61, 0.1);
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.22);
 }
 .item-card-shadow:hover {
-  box-shadow: 0 12px 32px rgba(239, 75, 61, 0.18);
+  box-shadow: 0 22px 46px -22px rgba(0, 0, 0, 0.28);
   transform: translateY(-2px);
   transition: all 0.3s ease-out;
 }
 
 .hero-overlay {
-  background: linear-gradient(180deg, rgba(43, 27, 18, 0.05) 0%, rgba(43, 27, 18, 0.55) 100%);
+  background: linear-gradient(180deg, rgba(58, 58, 58, 0.05) 0%, rgba(58, 58, 58, 0.55) 100%);
 }
 
 @keyframes payment-success-scale-in {
@@ -226,4 +226,97 @@ body {
   stroke-dasharray: 48;
   stroke-dashoffset: 48;
   animation: payment-success-check-draw 0.4s 0.25s ease-out forwards;
+}
+
+@keyframes wheel-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(60%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes wheel-title-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-60%);
+  }
+}
+
+@keyframes wheel-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.wheel-title-in {
+  animation: wheel-title-in 0.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.wheel-title-out {
+  animation: wheel-title-out 0.45s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.wheel-fade-in {
+  animation: wheel-fade-in 0.5s ease-in-out both;
+}
+
+/* Эргэдэг дугуйн геометр: төв нь (--cx, --cy) — хэсгийн зүүн дээд булангаас гадна.
+   Идэвхтэй таваг 45°-д байрлах тул (--hx, --hy) цэгт буух ба
+   хөрш 0° / 90° тавгууд дээд, зүүн ирмэгээс гадна нуугдана.
+   --k = 0.7071 - sin(45° - алхам): радиусыг алхмаас хамааруулж хөршүүдийг үргэлж дэлгэцээс гаргана. */
+.wheel-vars {
+  --plate: min(78vw, 340px);
+  --hx: 50vw;
+  --hy: calc(var(--plate) / 2 + 28px);
+  --R: calc((max(var(--hx), var(--hy)) + var(--plate) / 2 + 48px) / var(--k, 0.7071));
+  --cx: calc(var(--hx) - 0.7071 * var(--R));
+  --cy: calc(var(--hy) - 0.7071 * var(--R));
+}
+
+.wheel-content {
+  padding-top: calc(var(--hy) + var(--plate) / 2 + 28px);
+}
+
+@media (min-width: 768px) {
+  .wheel-vars {
+    --plate: 400px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wheel-vars {
+    --plate: 440px;
+    --hx: calc(var(--plate) / 2 + 96px);
+    --hy: calc(var(--plate) / 2 + 36px);
+  }
+  .wheel-content {
+    padding-top: calc(var(--hy) - 110px);
+    padding-left: calc(var(--hx) + var(--plate) / 2 + 56px);
+    min-height: calc(var(--hy) + var(--plate) / 2 + 24px);
+  }
+}
+
+@media (min-width: 1280px) {
+  .wheel-vars {
+    --plate: 520px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel-motion,
+  .wheel-motion * {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
 }

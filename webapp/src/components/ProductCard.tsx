@@ -19,7 +19,7 @@ export function ProductCard({ product }: { product: ProductDTO }) {
   }
 
   return (
-    <div className="group flex flex-col bg-surface-container-lowest rounded-2xl p-2.5 md:p-3 border border-outline-variant/50 hover:border-primary/30 hover:shadow-[0_10px_30px_-12px_rgba(239,75,61,0.25)] transition-all">
+    <div className="group flex flex-col bg-surface-container-lowest rounded-2xl p-2.5 md:p-3 border border-outline-variant/50 hover:border-transparent hover:shadow-[0_18px_40px_-22px_rgba(0,0,0,0.3)] transition-all">
       <div className="relative aspect-square rounded-xl overflow-hidden bg-white">
         <Image
           src={product.imageUrl}

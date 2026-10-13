@@ -45,7 +45,7 @@ export default function SignupPage() {
   return (
     <div className="flex-grow flex items-center justify-center px-margin-mobile py-u-xl">
       <div className="w-full max-w-md">
-        <div className="bg-surface-container-lowest rounded-lg p-u-lg shadow-[0_4px_24px_rgba(94,113,83,0.10)]">
+        <div className="bg-surface-container-lowest rounded-[20px] p-u-lg shadow-[0_24px_60px_-28px_rgba(0,0,0,0.25)]">
           <h1 className="font-headline-lg text-headline-lg text-primary mb-u-xs text-center">Бүртгүүлэх</h1>
           <p className="text-secondary text-center mb-u-lg">Шинэ хүнс хамгийн түрүүнд танайд хүрэхийн тулд бүртгүүлээрэй.</p>
 
