@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getOrderById, getPaymentByOrderId, markPaymentPaid } from "@/lib/db";
+import { getOrderById, getPaymentByOrderId } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { verifyInvoicePayment } from "@/lib/qpay";
+import { syncOnlinePayment } from "@/lib/payments";
 import { logError } from "@/lib/logger";
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "Нэвтэрнэ үү." }, { status: 401 });
@@ -24,19 +24,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: "Төлбөрийн бичлэг олдсонгүй." }, { status: 404 });
   }
 
-  if (payment.status !== "PENDING" || !payment.qpayInvoiceId) {
-    return NextResponse.json({ status: payment.status });
+  if (payment.status === "PENDING" && payment.bylInvoiceId) {
+    try {
+      if (await syncOnlinePayment(id)) {
+        return NextResponse.json({ status: "SUCCESS", amount: order.total });
+      }
+    } catch (err) {
+      logError("orders.payment-status", err);
+    }
   }
 
-  try {
-    const result = await verifyInvoicePayment(payment.qpayInvoiceId);
-    if (result.paid) {
-      await markPaymentPaid(id, result.transactionId);
-      return NextResponse.json({ status: "SUCCESS" });
-    }
-    return NextResponse.json({ status: "PENDING" });
-  } catch (err) {
-    logError("orders.payment-status", err);
-    return NextResponse.json({ status: "PENDING" });
-  }
+  return NextResponse.json({ status: payment.status, amount: order.total });
 }

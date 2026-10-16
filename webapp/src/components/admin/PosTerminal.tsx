@@ -111,11 +111,7 @@ export function PosTerminal({
         return;
       }
 
-      if (data.qpayInvoice) {
-        sessionStorage.setItem(
-          `qpay-invoice-${data.order.id}`,
-          JSON.stringify({ qpayInvoice: data.qpayInvoice, amount: data.order.total })
-        );
+      if (data.order.paymentType === "QPAY") {
         router.push(`/orders/${data.order.id}/pay`);
         return;
       }
@@ -134,12 +130,12 @@ export function PosTerminal({
 
   const companyPaymentOptions: { value: PaymentType; label: string }[] = [
     { value: "CASH", label: "Бэлнээр" },
-    { value: "QPAY", label: "QPay-ээр" },
+    { value: "QPAY", label: "Онлайн" },
     { value: "BANK", label: "Дансаар" },
   ];
   const retailPaymentOptions: { value: PaymentType; label: string }[] = [
     { value: "CASH", label: "Бэлнээр" },
-    { value: "QPAY", label: "QPay-ээр" },
+    { value: "QPAY", label: "Онлайн" },
   ];
 
   return (

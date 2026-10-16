@@ -594,8 +594,8 @@ export interface PaymentRecord {
   type: PaymentType;
   amount: number;
   status: PaymentStatus;
-  qpayInvoiceId: string | null;
-  qpayTransactionId: string | null;
+  bylInvoiceId: string | null;
+  bylInvoiceUrl: string | null;
 }
 
 function toPaymentRecord(p: {
@@ -604,8 +604,8 @@ function toPaymentRecord(p: {
   type: string;
   amount: number | string;
   status: string;
-  qpay_invoice_id: string | null;
-  qpay_transaction_id: string | null;
+  byl_invoice_id: string | null;
+  byl_invoice_url: string | null;
 }): PaymentRecord {
   return {
     id: p.id,
@@ -613,8 +613,8 @@ function toPaymentRecord(p: {
     type: p.type as PaymentType,
     amount: num(p.amount),
     status: p.status as PaymentStatus,
-    qpayInvoiceId: p.qpay_invoice_id,
-    qpayTransactionId: p.qpay_transaction_id,
+    bylInvoiceId: p.byl_invoice_id,
+    bylInvoiceUrl: p.byl_invoice_url,
   };
 }
 
@@ -624,21 +624,19 @@ export async function getPaymentByOrderId(orderId: string): Promise<PaymentRecor
   return data ? toPaymentRecord(data) : null;
 }
 
-export async function updatePaymentInvoice(
-  orderId: string,
-  input: { qpayInvoiceId: string }
-): Promise<void> {
+export async function setPaymentBylInvoice(orderId: string, input: { invoiceId: string; url: string }): Promise<void> {
   const { error } = await getSupabase()
     .from("payments")
-    .update({ qpay_invoice_id: input.qpayInvoiceId, updated_at: new Date().toISOString() })
+    .update({ byl_invoice_id: input.invoiceId, byl_invoice_url: input.url, updated_at: new Date().toISOString() })
     .eq("order_id", orderId);
   if (error) throw error;
 }
 
-export async function markPaymentPaid(orderId: string, qpayTransactionId: string | null): Promise<void> {
+export async function markPaymentPaid(orderId: string): Promise<void> {
   const { error } = await getSupabase()
     .from("payments")
-    .update({ status: "SUCCESS", qpay_transaction_id: qpayTransactionId, updated_at: new Date().toISOString() })
-    .eq("order_id", orderId);
+    .update({ status: "SUCCESS", updated_at: new Date().toISOString() })
+    .eq("order_id", orderId)
+    .neq("status", "SUCCESS");
   if (error) throw error;
 }

@@ -6,7 +6,7 @@ import type { PaymentType, PaymentStatus } from "@/types";
 const PAYMENT_TYPE_LABEL: Record<PaymentType, string> = {
   CASH: "Бэлнээр",
   CREDIT: "Зээлээр",
-  QPAY: "QPay",
+  QPAY: "Онлайн (Byl)",
   BANK: "Дансаар",
 };
 

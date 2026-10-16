@@ -15,7 +15,7 @@ const VAT_RATE = 0.1;
 const PAYMENT_OPTIONS: { value: PaymentType; label: string }[] = [
   { value: "CASH", label: "Бэлнээр" },
   { value: "CREDIT", label: "Зээлээр" },
-  { value: "QPAY", label: "QPay-ээр" },
+  { value: "QPAY", label: "Онлайн" },
 ];
 
 export default function BasketPage() {
@@ -73,10 +73,6 @@ export default function BasketPage() {
       }
 
       if (paymentType === "QPAY") {
-        sessionStorage.setItem(
-          `qpay-invoice-${data.order.id}`,
-          JSON.stringify({ qpayInvoice: data.qpayInvoice, amount: data.order.total })
-        );
         clear();
         router.push(`/orders/${data.order.id}/pay`);
         return;

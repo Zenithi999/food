@@ -112,6 +112,11 @@ create table if not exists payments (
   updated_at timestamptz not null default now()
 );
 
+-- Byl (byl.mn) онлайн төлбөрийн нэхэмжлэх.
+alter table payments add column if not exists byl_invoice_id text;
+alter table payments add column if not exists byl_invoice_url text;
+create index if not exists idx_payments_byl_invoice_id on payments(byl_invoice_id);
+
 create index if not exists idx_subcategories_category_id on subcategories(category_id);
 create index if not exists idx_products_category_id on products(category_id);
 create index if not exists idx_products_subcategory_id on products(subcategory_id);

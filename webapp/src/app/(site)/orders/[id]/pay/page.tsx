@@ -1,109 +1,89 @@
 "use client";
 
-import { useEffect, useRef, useState, use } from "react";
+import { useCallback, useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { PaymentSuccessAnimation } from "@/components/PaymentSuccessAnimation";
+import { MaterialIcon } from "@/components/MaterialIcon";
 import { formatMNT } from "@/lib/format";
 
-const POLL_INTERVAL_MS = 3000;
-const POLL_TIMEOUT_MS = 2 * 60 * 1000;
+const POLL_INTERVAL_MS = 4000;
 
-interface QPayInvoice {
-  invoiceId: string;
-  qrImage: string;
-  qrText: string;
-  deeplinks: { name: string; link: string }[];
-}
+type Status = "loading" | "pending" | "success" | "error";
 
-function readStoredInvoice(id: string): { qpayInvoice: QPayInvoice | null; amount: number | null } {
-  if (typeof window === "undefined") return { qpayInvoice: null, amount: null };
-  const key = `qpay-invoice-${id}`;
-  const stored = sessionStorage.getItem(key);
-  if (!stored) return { qpayInvoice: null, amount: null };
-  sessionStorage.removeItem(key);
-  try {
-    const parsed = JSON.parse(stored);
-    return { qpayInvoice: parsed.qpayInvoice ?? null, amount: parsed.amount ?? null };
-  } catch {
-    return { qpayInvoice: null, amount: null };
-  }
-}
-
-export default function QPayPayPage({ params }: { params: Promise<{ id: string }> }) {
+export default function PayPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const [initial] = useState(() => readStoredInvoice(id));
-  const [invoice, setInvoice] = useState<QPayInvoice | null>(initial.qpayInvoice);
-  const [amount] = useState<number | null>(initial.amount);
-  const [status, setStatus] = useState<"loading" | "pending" | "success" | "timeout" | "error">("loading");
+  const [status, setStatus] = useState<Status>("loading");
+  const [url, setUrl] = useState<string | null>(null);
+  const [amount, setAmount] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [retrying, setRetrying] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [checking, setChecking] = useState(false);
 
-  async function loadOrder() {
+  const loadLink = useCallback(async () => {
+    setError(null);
     try {
-      const res = await fetch(`/api/orders/${id}/payment-status`);
+      const res = await fetch(`/api/orders/${id}/payment-link`, { method: "POST" });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data) {
         setStatus("error");
-        setError(data?.error ?? "Захиалга олдсонгүй.");
+        setError(data?.error ?? "Төлбөрийн холбоос үүсгэхэд алдаа гарлаа.");
         return;
       }
       if (data.status === "SUCCESS") {
         setStatus("success");
         return;
       }
+      setUrl(data.url);
+      setAmount(data.amount);
       setStatus("pending");
     } catch {
       setStatus("error");
       setError("Сүлжээний алдаа гарлаа.");
     }
-  }
+  }, [id]);
 
-  async function retryInvoice() {
-    setRetrying(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/orders/${id}/qpay-invoice`, { method: "POST" });
-      const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.qpayInvoice) {
-        setError(data?.error ?? "QPay нэхэмжлэх үүсгэхэд алдаа гарлаа.");
-        return;
-      }
-      setInvoice(data.qpayInvoice);
-      setStatus("pending");
-    } finally {
-      setRetrying(false);
-    }
-  }
-
-  useEffect(() => {
-    loadOrder();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const checkStatus = useCallback(async () => {
+    const res = await fetch(`/api/orders/${id}/payment-status`).catch(() => null);
+    const data = await res?.json().catch(() => null);
+    if (data?.status === "SUCCESS") setStatus("success");
   }, [id]);
 
   useEffect(() => {
-    if (status !== "pending") return;
-
-    pollRef.current = setInterval(loadOrder, POLL_INTERVAL_MS);
-    timeoutRef.current = setTimeout(() => {
-      setStatus((s) => (s === "pending" ? "timeout" : s));
-    }, POLL_TIMEOUT_MS);
-
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- төлбөрийн холбоосыг серверээс ачаална
+    loadLink();
+  }, [loadLink]);
 
   useEffect(() => {
-    if (status === "success") {
-      const t = setTimeout(() => router.push("/orders?success=1"), 1600);
-      return () => clearTimeout(t);
-    }
+    if (status !== "pending") return;
+    const t = setInterval(checkStatus, POLL_INTERVAL_MS);
+    const onFocus = () => checkStatus();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(t);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [status, checkStatus]);
+
+  useEffect(() => {
+    if (status !== "success") return;
+    const t = setTimeout(() => router.push("/orders?success=1"), 1600);
+    return () => clearTimeout(t);
   }, [status, router]);
+
+  async function manualCheck() {
+    setChecking(true);
+    await checkStatus();
+    setChecking(false);
+  }
+
+  async function mockPay() {
+    await fetch("/api/dev/byl-mock-pay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId: id }),
+    });
+    await checkStatus();
+  }
 
   if (status === "success") {
     return (
@@ -113,82 +93,65 @@ export default function QPayPayPage({ params }: { params: Promise<{ id: string }
     );
   }
 
-  return (
-    <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-u-xl w-full max-w-md">
-      <h1 className="font-headline-lg text-headline-lg text-primary mb-u-md text-center">QPay-ээр төлөх</h1>
+  const isMock = url?.startsWith("/") ?? false;
 
-      {amount !== null && (
-        <p className="text-center text-secondary mb-u-md">
-          Төлөх дүн: <span className="font-label-md text-primary">{formatMNT(amount)}</span>
-        </p>
-      )}
+  return (
+    <div className="mx-auto px-margin-mobile py-u-xl w-full max-w-md">
+      <h1 className="font-headline-lg text-headline-lg text-center mb-2">Онлайн төлбөр</h1>
+      <p className="text-center text-secondary text-label-md mb-u-md">QPay, SocialPay, Голомт, Pocket-оор төлөх боломжтой</p>
 
       {status === "loading" && <p className="text-center text-secondary">Ачааллаж байна...</p>}
 
-      {(status === "pending" || status === "timeout") && (
-        <div className="bg-surface-container-lowest rounded-lg p-u-lg text-center item-card-shadow">
-          {invoice ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element -- base64 data URI, no benefit from next/image optimization */}
-              <img
-                src={`data:image/png;base64,${invoice.qrImage}`}
-                alt="QPay QR код"
-                className="mx-auto w-56 h-56 object-contain mb-u-md"
-              />
-              {invoice.deeplinks.length > 0 && (
-                <div className="flex flex-col gap-2 mb-u-md">
-                  {invoice.deeplinks.map((d) => (
-                    <a
-                      key={d.link}
-                      href={d.link}
-                      className="text-primary underline text-label-sm"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {d.name}
-                    </a>
-                  ))}
-                </div>
-              )}
-              <p className="text-label-sm text-secondary">QPay апп-аар уншуулж төлбөрөө хийнэ үү.</p>
-            </>
-          ) : (
-            <>
-              <p className="text-secondary mb-u-md">QR код үүсээгүй байна.</p>
-              <button
-                onClick={retryInvoice}
-                disabled={retrying}
-                className="w-full bg-primary text-on-primary py-3 rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity disabled:opacity-60"
-              >
-                {retrying ? "Үүсгэж байна..." : "QPay QR код үүсгэх"}
-              </button>
-            </>
-          )}
-
-          {status === "timeout" && (
-            <p className="text-error text-label-sm mt-u-md">
-              Төлбөр удаж байна. Апп-аараа шалгаад дараах товчоор дахин шалгана уу.
+      {status === "pending" && url && (
+        <div className="bg-surface-container-lowest rounded-[20px] p-u-lg text-center shadow-[0_24px_60px_-28px_rgba(0,0,0,0.25)]">
+          {amount !== null && (
+            <p className="mb-u-md">
+              <span className="block text-label-sm text-secondary mb-1">Төлөх дүн</span>
+              <span className="text-[32px] font-extrabold">{formatMNT(amount)}</span>
             </p>
           )}
 
+          {isMock ? (
+            <button
+              onClick={mockPay}
+              className="w-full bg-tertiary text-on-tertiary py-3.5 rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity"
+            >
+              Тест төлбөр хийх (Byl тохируулаагүй)
+            </button>
+          ) : (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center gap-2 bg-primary text-on-primary py-3.5 rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity"
+            >
+              Төлбөр төлөх
+              <MaterialIcon name="open_in_new" className="text-base" />
+            </a>
+          )}
+
+          <p className="text-label-sm text-secondary mt-u-md">
+            Төлбөрийн хуудас шинэ цонхонд нээгдэнэ. Төлбөр хийгдмэгц энэ хуудас автоматаар шинэчлэгдэнэ.
+          </p>
+
           <button
-            onClick={loadOrder}
-            className="mt-u-md w-full bg-primary text-on-primary py-3 rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity"
+            onClick={manualCheck}
+            disabled={checking}
+            className="mt-u-md w-full py-3 rounded-full font-label-md text-label-md border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-60"
           >
-            Төлбөр шалгах
+            {checking ? "Шалгаж байна..." : "Төлбөр шалгах"}
           </button>
         </div>
       )}
 
       {status === "error" && (
-        <div className="bg-error-container text-on-error-container rounded-lg p-u-md text-center">
+        <div className="bg-error-container text-on-error-container rounded-[20px] p-u-md text-center">
           <p className="mb-u-md">{error}</p>
           <button
-            onClick={retryInvoice}
-            disabled={retrying}
-            className="bg-primary text-on-primary py-3 px-6 rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity disabled:opacity-60"
+            onClick={loadLink}
+            className="bg-primary text-on-primary py-3 px-6 rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity"
           >
-            {retrying ? "Оролдож байна..." : "Дахин оролдох"}
+            Дахин оролдох
           </button>
         </div>
       )}
