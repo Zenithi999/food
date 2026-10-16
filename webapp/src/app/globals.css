@@ -170,6 +170,17 @@ body {
   overflow-x: clip;
 }
 
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  html,
+  body {
+    background: #fff;
+  }
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-on-surface);

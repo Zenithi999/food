@@ -25,7 +25,7 @@ export function AdminSidebar({ email }: { email: string }) {
   }
 
   return (
-    <aside className="w-56 md:w-64 flex-shrink-0 bg-surface-container-lowest border-r border-outline-variant min-h-screen sticky top-0 flex flex-col">
+    <aside className="print:hidden w-56 md:w-64 flex-shrink-0 bg-surface-container-lowest border-r border-outline-variant min-h-screen sticky top-0 flex flex-col">
       <div className="h-20 flex items-center px-u-md border-b border-outline-variant">
         <Link href="/" className="font-headline-md text-headline-md font-medium text-primary">
           ХүнсМаркет

@@ -1,3 +1,5 @@
+import { SHOP } from "@/lib/shop";
+
 export function Footer() {
   return (
     <footer className="w-full mt-u-xl bg-secondary-container">
@@ -12,11 +14,11 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-6 md:gap-u-xl w-full md:w-auto">
           <div className="flex flex-col gap-u-sm">
             <h4 className="font-label-md text-label-md text-primary uppercase tracking-widest">Холбоо барих</h4>
-            <a className="text-secondary hover:text-primary hover:underline decoration-primary transition-colors" href="tel:+97677778888">
-              +976 7777-8888
+            <a className="text-secondary hover:text-primary hover:underline decoration-primary transition-colors" href={`tel:${SHOP.phone.replace(/[^+\d]/g, "")}`}>
+              {SHOP.phone}
             </a>
-            <a className="text-secondary hover:text-primary hover:underline decoration-primary transition-colors" href="mailto:info@khunsmarket.mn">
-              info@khunsmarket.mn
+            <a className="text-secondary hover:text-primary hover:underline decoration-primary transition-colors" href={`mailto:${SHOP.email}`}>
+              {SHOP.email}
             </a>
             <a className="text-secondary hover:text-primary hover:underline decoration-primary transition-colors" href="#">
               Instagram
